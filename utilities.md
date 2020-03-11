@@ -11,11 +11,31 @@ The *os* and *os.path* modules include many functions to interact
 with the file system. The *shutil* module can copy files.
 
 -   [os module docs](https://docs.python.org/3/library/os.html)
--   `filenames = os.listdir(dir)` -- list of filenames in that directory
+-   `filenames = os.scandir(dir)` -- list of filenames in that directory
     path (not including . and ..). The filenames are just the names in
     the directory, not their absolute paths.
+
+        import os
+
+        with os.scandir('my_directory/') as entries:
+          for entry in entries:
+            print(entry.name)
+
+    The code above will list *everything* in the directory, including the names
+    of subdirectories. If you want to limit the list to just files (or a subset
+    of files) then you can use code like:
+
+        import os
+
+        # List all files in a directory using os.listdir
+        basepath = 'my_directory/'
+        for entry in os.listdir(basepath):
+            if os.path.isfile(os.path.join(basepath, entry)):
+                print(entry)
+
 -   `os.path.join(dir, filename)` -- given a filename from the above list,
-    use this to put the dir and filename together to make a path
+    use this to put the dir and filename together to make a path. This saves you
+    from needing to know what the path separator is.
 -   `os.path.abspath(path)` -- given a path, return an absolute form, e.g.
     /home/nick/foo/bar.html
 -   `os.path.dirname(path)`, `os.path.basename(path)` -- given
@@ -32,8 +52,9 @@ with the file system. The *shutil* module can copy files.
 import os
 
 def printdir(dir):
-    filenames = os.listdir(dir)
-    for filename in filenames:
+  with os.scandir(dir) as files:
+    for file in files:
+        filename = file.name
         print(filename)
         print(os.path.join(dir, filename))
         print(os.path.abspath(os.path.join(dir, filename)))
@@ -46,7 +67,7 @@ functions.
 import os
 
 dir(os)
-help(os.listdir)
+help(os.scandir)
 dir(os.path)
 help(os.path.dirname)
 ```
